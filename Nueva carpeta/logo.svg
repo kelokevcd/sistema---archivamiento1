@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <!-- Fondo blanco -->
+  <rect width="800" height="200" fill="#ffffff"/>
+  
+  <!-- Texto DIARIO en negro -->
+  <text x="50" y="120" font-family="Arial, sans-serif" font-weight="bold" font-size="68" fill="#000000">DIARIO</text>
+  
+  <!-- Texto YA en naranja con estilo específico -->
+  <text x="280" y="120" font-family="Arial, sans-serif" font-weight="bold" font-size="120" fill="#FF6600" font-style="italic">ya</text>
+  
+  <!-- Punto naranja -->
+  <circle cx="420" cy="95" r="12" fill="#FF6600"/>
+  
+  <!-- Texto HUARAZ en negro -->
+  <text x="450" y="120" font-family="Arial, sans-serif" font-weight="bold" font-size="68" fill="#000000">HUARAZ</text>
+  
+  <!-- Línea inferior naranja -->
+  <rect x="50" y="140" width="700" height="6" fill="#FF6600"/>
+  
+  <!-- Texto tagline en la esquina superior derecha -->
+  <text x="520" y="45" font-family="Arial, sans-serif" font-size="14" fill="#000000">32 años al servicio</text>
+  <text x="520" y="62" font-family="Arial, sans-serif" font-size="14" fill="#000000">de la región Ancash</text>
+</svg>

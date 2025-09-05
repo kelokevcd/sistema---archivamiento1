@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura de Base de Datos - Mi Archivo de Diarios</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background-color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        .logo-header img {
+            height: 60px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        .logo-header img:hover {
+            transform: scale(1.03);
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1));
+        }
+        h1 {
+            color: #b91942;
+            margin: 0;
+        }
+        .back-button {
+            background-color: #b91942;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow: auto;
+            max-width: 100%;
+        }
+        .er-diagram {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .table {
+            position: absolute;
+            background-color: white;
+            border: 2px solid #b91942;
+            border-radius: 8px;
+            padding: 10px;
+            width: 250px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table-header {
+            background-color: #b91942;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            margin: -10px -10px 10px -10px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+        }
+        .field {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .field:last-child {
+            border-bottom: none;
+        }
+        .primary-key {
+            font-weight: bold;
+            color: #b91942;
+        }
+        .relationship {
+            position: absolute;
+            border-top: 2px solid #666;
+            z-index: 1;
+        }
+        .relationship::before, .relationship::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #666;
+            border-radius: 50%;
+            top: -5px;
+        }
+        .relationship::before {
+            left: -5px;
+        }
+        .relationship::after {
+            right: -5px;
+        }
+        .description {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-header">
+            <img src="logo.svg" alt="Diario YA Huaraz" class="logo-image" style="height: 50px; width: auto;">
+            <h1>Estructura de Base de Datos</h1>
+        </div>
+        <a href="index.html" class="back-button">Volver a la Aplicación</a>
+    </div>
+
+    <div class="diagram-container">
+        <div class="er-diagram">
+            <!-- Tabla Diarios -->
+            <div class="table" style="top: 50px; left: 325px;">
+                <div class="table-header">Diarios</div>
+                <div class="field primary-key">id: String (timestamp)</div>
+                <div class="field">title: String</div>
+                <div class="field">category: String</div>
+                <div class="field">date: Date</div>
+                <div class="field">fileURL: String (ObjectURL)</div>
+                <div class="field">fileName: String</div>
+                <div class="field">uploadDate: String (ISO)</div>
+            </div>
+
+            <!-- Tabla Categorías (conceptual) -->
+            <div class="table" style="top: 250px; left: 50px;">
+                <div class="table-header">Categorías (Set)</div>
+                <div class="field">category: String</div>
+                <div class="field note">Colección de categorías únicas</div>
+            </div>
+
+            <!-- Tabla Años (conceptual) -->
+            <div class="table" style="top: 250px; left: 600px;">
+                <div class="table-header">Años (Set)</div>
+                <div class="field">year: Number</div>
+                <div class="field note">Colección de años únicos</div>
+            </div>
+
+            <!-- Relaciones -->
+            <!-- Diarios a Categorías -->
+            <div class="relationship" style="width: 200px; top: 200px; left: 125px;"></div>
+            <!-- Diarios a Años -->
+            <div class="relationship" style="width: 200px; top: 200px; left: 575px;"></div>
+        </div>
+    </div>
+
+    <div class="description">
+        <h2>Descripción de la Estructura</h2>
+        <p>El sistema de Archivo de Diarios utiliza localStorage como mecanismo de almacenamiento, implementando una estructura de datos simple pero efectiva:</p>
+        
+        <h3>Entidad Principal: Diarios</h3>
+        <ul>
+            <li><strong>id:</strong> Identificador único generado a partir del timestamp actual</li>
+            <li><strong>title:</strong> Título del diario</li>
+            <li><strong>category:</strong> Categoría asignada al diario</li>
+            <li><strong>date:</strong> Fecha del diario</li>
+            <li><strong>fileURL:</strong> URL del objeto para acceder al archivo PDF</li>
+            <li><strong>fileName:</strong> Nombre original del archivo</li>
+            <li><strong>uploadDate:</strong> Fecha y hora de subida en formato ISO</li>
+        </ul>
+
+        <h3>Colecciones Auxiliares</h3>
+        <p>El sistema mantiene dos colecciones auxiliares para facilitar el filtrado y las estadísticas:</p>
+        <ul>
+            <li><strong>Categorías (Set):</strong> Conjunto de todas las categorías únicas extraídas de los diarios</li>
+            <li><strong>Años (Set):</strong> Conjunto de todos los años únicos extraídos de las fechas de los diarios</li>
+        </ul>
+
+        <h3>Relaciones</h3>
+        <p>Aunque no es una base de datos relacional tradicional, conceptualmente existen estas relaciones:</p>
+        <ul>
+            <li><strong>Diarios → Categorías:</strong> Relación uno a muchos (un diario pertenece a una categoría, una categoría puede tener muchos diarios)</li>
+            <li><strong>Diarios → Años:</strong> Relación uno a muchos (un diario pertenece a un año, un año puede tener muchos diarios)</li>
+        </ul>
+
+        <div class="note">
+            <p><strong>Nota:</strong> Esta estructura se implementa en JavaScript utilizando un array de objetos para los diarios y objetos Set para las categorías y años. Todos los datos se serializan y almacenan en localStorage bajo la clave 'diaries'.</p>
+        </div>
+    </div>
+
+    <script>
+        // Script para mejorar la visualización de las relaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            // Podría añadirse código JavaScript para mejorar la visualización
+            // o hacer el diagrama interactivo si se desea
+        });
+    </script>
+</body>
+</html>

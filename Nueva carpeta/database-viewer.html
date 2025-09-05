@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de Base de Datos - Mi Archivo de Diarios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f0f2;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #d81e45 0%, #b91942 100%);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background-color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .logo-image {
+            height: 60px;
+            width: auto;
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        .logo-image:hover {
+            transform: scale(1.03);
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1));
+        }
+
+        .header-title i {
+            font-size: 1.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .primary-button {
+            background-color: #25a55f;
+            color: white;
+        }
+
+        .danger-button {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .secondary-button {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid #b91942;
+            color: #b91942;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background-color: #f9f9f9;
+            font-weight: 500;
+        }
+
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .json-viewer {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-button {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-message i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #b91942;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            font-family: monospace;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #b91942;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <img src="logo.svg" alt="Diario YA Huaraz" class="logo-image" style="height: 40px; width: auto;">
+            <h1>Visor de Base de Datos</h1>
+        </div>
+        <div class="header-actions">
+            <button id="export-button" class="secondary-button">
+                <i class="fas fa-download"></i> Exportar Datos
+            </button>
+            <button id="import-button" class="secondary-button">
+                <i class="fas fa-upload"></i> Importar Datos
+            </button>
+            <button id="clear-button" class="danger-button">
+                <i class="fas fa-trash"></i> Limpiar Datos
+            </button>
+            <button id="back-button" class="primary-button">
+                <i class="fas fa-arrow-left"></i> Volver a la Aplicación
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="diaries">Diarios</div>
+            <div class="tab" data-tab="raw">Datos JSON</div>
+            <div class="tab" data-tab="storage">Almacenamiento</div>
+        </div>
+
+        <div id="diaries-tab" class="tab-content active">
+            <div id="diaries-container">
+                <!-- Contenido de diarios se añadirá dinámicamente -->
+            </div>
+        </div>
+
+        <div id="raw-tab" class="tab-content">
+            <button id="edit-json-button" class="secondary-button" style="margin-bottom: 15px;">
+                <i class="fas fa-edit"></i> Editar JSON
+            </button>
+            <div id="json-viewer" class="json-viewer">
+                <!-- Contenido JSON se añadirá dinámicamente -->
+            </div>
+        </div>
+
+        <div id="storage-tab" class="tab-content">
+            <div id="storage-info">
+                <!-- Información de almacenamiento se añadirá dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar JSON -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Datos JSON</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="status-message" class="status-message" style="display: none;"></div>
+            <div class="form-group">
+                <label for="json-editor">Editar JSON (asegúrate de mantener un formato JSON válido):</label>
+                <textarea id="json-editor"></textarea>
+            </div>
+            <div class="form-actions">
+                <button id="cancel-edit" class="secondary-button">Cancelar</button>
+                <button id="save-json" class="primary-button">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para importar datos -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Importar Datos</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div id="import-status-message" class="status-message" style="display: none;"></div>
+            <div class="form-group">
+                <label for="import-file">Seleccionar archivo JSON:</label>
+                <input type="file" id="import-file" accept=".json">
+            </div>
+            <div id="import-preview" style="display: none;">
+                <h3>Vista previa de datos:</h3>
+                <div id="import-preview-content" class="json-viewer"></div>
+            </div>
+            <div class="form-actions">
+                <button id="cancel-import" class="secondary-button">Cancelar</button>
+                <button id="confirm-import" class="primary-button" disabled>Importar Datos</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const diariesContainer = document.getElementById('diaries-container');
+        const jsonViewer = document.getElementById('json-viewer');
+        const storageInfo = document.getElementById('storage-info');
+        const editJsonButton = document.getElementById('edit-json-button');
+        const editModal = document.getElementById('edit-modal');
+        const jsonEditor = document.getElementById('json-editor');
+        const saveJsonButton = document.getElementById('save-json');
+        const cancelEditButton = document.getElementById('cancel-edit');
+        const closeButtons = document.querySelectorAll('.close');
+        const statusMessage = document.getElementById('status-message');
+        const exportButton = document.getElementById('export-button');
+        const importButton = document.getElementById('import-button');
+        const clearButton = document.getElementById('clear-button');
+        const backButton = document.getElementById('back-button');
+        const importModal = document.getElementById('import-modal');
+        const importFile = document.getElementById('import-file');
+        const importPreview = document.getElementById('import-preview');
+        const importPreviewContent = document.getElementById('import-preview-content');
+        const confirmImportButton = document.getElementById('confirm-import');
+        const cancelImportButton = document.getElementById('cancel-import');
+        const importStatusMessage = document.getElementById('import-status-message');
+
+        // Variables globales
+        let diariesData = [];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            setupEventListeners();
+        });
+
+        // Cargar datos desde localStorage
+        function loadData() {
+            const storedDiaries = localStorage.getItem('diaries');
+            if (storedDiaries) {
+                try {
+                    diariesData = JSON.parse(storedDiaries);
+                    updateDiariesTab();
+                    updateRawTab();
+                    updateStorageTab();
+                } catch (error) {
+                    console.error('Error al cargar datos:', error);
+                    showEmptyState('Error al cargar los datos. El formato JSON no es válido.');
+                }
+            } else {
+                showEmptyState('No hay datos almacenados en la base de datos.');
+                updateRawTab();
+                updateStorageTab();
+            }
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Cambio de pestañas
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Actualizar clases activas
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+
+            // Botón de editar JSON
+            editJsonButton.addEventListener('click', () => {
+                jsonEditor.value = JSON.stringify(diariesData, null, 2);
+                editModal.style.display = 'flex';
+                statusMessage.style.display = 'none';
+            });
+
+            // Botón de guardar JSON
+            saveJsonButton.addEventListener('click', saveJsonChanges);
+
+            // Botón de cancelar edición
+            cancelEditButton.addEventListener('click', () => {
+                editModal.style.display = 'none';
+            });
+
+            // Cerrar modales
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    editModal.style.display = 'none';
+                    importModal.style.display = 'none';
+                });
+            });
+
+            // Cerrar modales al hacer clic fuera
+            window.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    editModal.style.display = 'none';
+                }
+                if (e.target === importModal) {
+                    importModal.style.display = 'none';
+                }
+            });
+
+            // Exportar datos
+            exportButton.addEventListener('click', exportData);
+
+            // Importar datos
+            importButton.addEventListener('click', () => {
+                importFile.value = '';
+                importPreview.style.display = 'none';
+                importStatusMessage.style.display = 'none';
+                confirmImportButton.disabled = true;
+                importModal.style.display = 'flex';
+            });
+
+            // Previsualizar archivo de importación
+            importFile.addEventListener('change', previewImportFile);
+
+            // Confirmar importación
+            confirmImportButton.addEventListener('click', importData);
+
+            // Cancelar importación
+            cancelImportButton.addEventListener('click', () => {
+                importModal.style.display = 'none';
+            });
+
+            // Limpiar datos
+            clearButton.addEventListener('click', clearData);
+
+            // Volver a la aplicación
+            backButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Actualizar pestaña de diarios
+        function updateDiariesTab() {
+            if (diariesData.length === 0) {
+                showEmptyState('No hay diarios almacenados en la base de datos.');
+                return;
+            }
+
+            diariesContainer.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Fecha</th>
+                            <th>Nombre de Archivo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="diaries-table-body">
+                    </tbody>
+                </table>
+            `;
+
+            const tableBody = document.getElementById('diaries-table-body');
+            
+            diariesData.forEach(diary => {
+                const row = document.createElement('tr');
+                const formattedDate = new Date(diary.date).toLocaleDateString('es-ES');
+                
+                row.innerHTML = `
+                    <td>${diary.id}</td>
+                    <td>${diary.title}</td>
+                    <td>${diary.category}</td>
+                    <td>${formattedDate}</td>
+                    <td>${diary.fileName}</td>
+                    <td class="actions-cell">
+                        <button class="action-button primary-button view-diary" data-id="${diary.id}">
+                            <i class="far fa-eye"></i> Ver
+                        </button>
+                        <button class="action-button danger-button delete-diary" data-id="${diary.id}">
+                            <i class="far fa-trash-alt"></i> Eliminar
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+
+            // Añadir event listeners a los botones de acción
+            document.querySelectorAll('.view-diary').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.getAttribute('data-id');
+                    const diary = diariesData.find(d => d.id === id);
+                    if (diary && diary.fileURL) {
+                        window.open(diary.fileURL, '_blank');
+                    } else {
+                        alert('No se puede abrir el archivo. La URL no es válida.');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-diary').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.getAttribute('data-id');
+                    if (confirm('¿Estás seguro de que deseas eliminar este diario?')) {
+                        deleteDiary(id);
+                    }
+                });
+            });
+        }
+
+        // Actualizar pestaña de JSON
+        function updateRawTab() {
+            jsonViewer.textContent = JSON.stringify(diariesData, null, 2);
+        }
+
+        // Actualizar pestaña de almacenamiento
+        function updateStorageTab() {
+            const totalItems = Object.keys(localStorage).length;
+            const diariesSize = new Blob([localStorage.getItem('diaries') || '']).size;
+            const totalSize = calculateTotalStorageSize();
+            const usedPercentage = (totalSize / (5 * 1024 * 1024) * 100).toFixed(2);
+
+            storageInfo.innerHTML = `
+                <h2>Información de Almacenamiento</h2>
+                <div class="data-table">
+                    <table>
+                        <tr>
+                            <th>Total de elementos en localStorage:</th>
+                            <td>${totalItems}</td>
+                        </tr>
+                        <tr>
+                            <th>Tamaño de datos de diarios:</th>
+                            <td>${formatBytes(diariesSize)}</td>
+                        </tr>
+                        <tr>
+                            <th>Tamaño total de localStorage:</th>
+                            <td>${formatBytes(totalSize)}</td>
+                        </tr>
+                        <tr>
+                            <th>Porcentaje utilizado (aprox.):</th>
+                            <td>${usedPercentage}% de 5MB</td>
+                        </tr>
+                    </table>
+                </div>
+                <h3 style="margin-top: 20px;">Elementos en localStorage:</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Clave</th>
+                            <th>Tamaño</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${getLocalStorageItemsHTML()}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Obtener HTML para elementos de localStorage
+        function getLocalStorageItemsHTML() {
+            let html = '';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const size = new Blob([value]).size;
+                let type = 'Texto';
+                
+                try {
+                    JSON.parse(value);
+                    type = 'JSON';
+                } catch (e) {
+                    // No es JSON
+                }
+                
+                html += `
+                    <tr>
+                        <td>${key}</td>
+                        <td>${formatBytes(size)}</td>
+                        <td>${type}</td>
+                    </tr>
+                `;
+            }
+            return html;
+        }
+
+        // Calcular tamaño total de localStorage
+        function calculateTotalStorageSize() {
+            let totalSize = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                totalSize += new Blob([key, value]).size;
+            }
+            return totalSize;
+        }
+
+        // Formatear bytes a unidades legibles
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Mostrar estado vacío
+        function showEmptyState(message) {
+            diariesContainer.innerHTML = `
+                <div class="empty-message">
+                    <i class="fas fa-database"></i>
+                    <h2>${message}</h2>
+                </div>
+            `;
+        }
+
+        // Guardar cambios de JSON
+        function saveJsonChanges() {
+            try {
+                const newData = JSON.parse(jsonEditor.value);
+                diariesData = newData;
+                localStorage.setItem('diaries', JSON.stringify(diariesData));
+                
+                // Actualizar UI
+                updateDiariesTab();
+                updateRawTab();
+                updateStorageTab();
+                
+                // Mostrar mensaje de éxito
+                statusMessage.textContent = 'Datos guardados correctamente.';
+                statusMessage.className = 'status-message success';
+                statusMessage.style.display = 'block';
+                
+                // Cerrar modal después de un tiempo
+                setTimeout(() => {
+                    editModal.style.display = 'none';
+                }, 1500);
+            } catch (error) {
+                // Mostrar mensaje de error
+                statusMessage.textContent = `Error: ${error.message}`;
+                statusMessage.className = 'status-message error';
+                statusMessage.style.display = 'block';
+            }
+        }
+
+        // Eliminar un diario
+        function deleteDiary(id) {
+            const index = diariesData.findIndex(diary => diary.id === id);
+            if (index !== -1) {
+                // Liberar URL del objeto si existe
+                if (diariesData[index].fileURL) {
+                    try {
+                        URL.revokeObjectURL(diariesData[index].fileURL);
+                    } catch (e) {
+                        console.warn('No se pudo revocar la URL del objeto:', e);
+                    }
+                }
+                
+                // Eliminar diario
+                diariesData.splice(index, 1);
+                
+                // Guardar cambios
+                localStorage.setItem('diaries', JSON.stringify(diariesData));
+                
+                // Actualizar UI
+                updateDiariesTab();
+                updateRawTab();
+                updateStorageTab();
+            }
+        }
+
+        // Exportar datos
+        function exportData() {
+            const dataStr = JSON.stringify(diariesData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diarios_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Previsualizar archivo de importación
+        function previewImportFile(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                importPreview.style.display = 'none';
+                confirmImportButton.disabled = true;
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    importPreviewContent.textContent = JSON.stringify(data, null, 2);
+                    importPreview.style.display = 'block';
+                    confirmImportButton.disabled = false;
+                    
+                    // Limpiar mensaje de estado
+                    importStatusMessage.style.display = 'none';
+                } catch (error) {
+                    importPreview.style.display = 'none';
+                    confirmImportButton.disabled = true;
+                    
+                    // Mostrar mensaje de error
+                    importStatusMessage.textContent = `Error: El archivo no contiene JSON válido. ${error.message}`;
+                    importStatusMessage.className = 'status-message error';
+                    importStatusMessage.style.display = 'block';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Importar datos
+        function importData() {
+            const file = importFile.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    
+                    // Validar que los datos tienen el formato esperado
+                    if (!Array.isArray(data)) {
+                        throw new Error('Los datos importados deben ser un array.');
+                    }
+                    
+                    // Guardar datos
+                    diariesData = data;
+                    localStorage.setItem('diaries', JSON.stringify(diariesData));
+                    
+                    // Actualizar UI
+                    updateDiariesTab();
+                    updateRawTab();
+                    updateStorageTab();
+                    
+                    // Mostrar mensaje de éxito
+                    importStatusMessage.textContent = 'Datos importados correctamente.';
+                    importStatusMessage.className = 'status-message success';
+                    importStatusMessage.style.display = 'block';
+                    
+                    // Cerrar modal después de un tiempo
+                    setTimeout(() => {
+                        importModal.style.display = 'none';
+                    }, 1500);
+                } catch (error) {
+                    // Mostrar mensaje de error
+                    importStatusMessage.textContent = `Error: ${error.message}`;
+                    importStatusMessage.className = 'status-message error';
+                    importStatusMessage.style.display = 'block';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Limpiar datos
+        function clearData() {
+            if (confirm('¿Estás seguro de que deseas eliminar todos los datos? Esta acción no se puede deshacer.')) {
+                // Liberar URLs de objetos
+                diariesData.forEach(diary => {
+                    if (diary.fileURL) {
+                        try {
+                            URL.revokeObjectURL(diary.fileURL);
+                        } catch (e) {
+                            console.warn('No se pudo revocar la URL del objeto:', e);
+                        }
+                    }
+                });
+                
+                // Limpiar datos
+                diariesData = [];
+                localStorage.setItem('diaries', JSON.stringify(diariesData));
+                
+                // Actualizar UI
+                updateDiariesTab();
+                updateRawTab();
+                updateStorageTab();
+                
+                alert('Todos los datos han sido eliminados correctamente.');
+            }
+        }
+    </script>
+</body>
+</html>

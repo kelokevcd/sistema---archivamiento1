@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Archivo de Diarios</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="logo.svg" alt="Diario YA Huaraz" class="logo-image">
+        </div>
+        <div class="header-buttons">
+            <button id="stats-button"><i class="fas fa-chart-bar"></i> Estadísticas</button>
+            <button id="database-button"><i class="fas fa-database"></i> Base de Datos</button>
+            <button id="upload-button" class="primary-button"><i class="fas fa-upload"></i> Subir Diarios</button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-input" placeholder="Buscar por nombre o categoría...">
+        </div>
+        
+        <select id="year-filter">
+            <option value="">Todos los años</option>
+            <!-- Años se añadirán dinámicamente con JavaScript -->
+        </select>
+        
+        <select id="category-filter">
+            <option value="">Todas las categorías</option>
+            <!-- Categorías se añadirán dinámicamente con JavaScript -->
+        </select>
+        
+        <div class="date-picker">
+            <input type="date" id="date-filter">
+        </div>
+        
+        <div class="view-toggle">
+            <button id="grid-view" class="active"><i class="fas fa-th"></i></button>
+            <button id="list-view"><i class="fas fa-list"></i></button>
+        </div>
+    </div>
+
+    <main>
+        <div id="diaries-container" class="grid-view">
+            <!-- Contenido de diarios se añadirá dinámicamente con JavaScript -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-archive"></i>
+                </div>
+                <h2>No hay diarios para mostrar</h2>
+                <p>Comienza subiendo tus primeros diarios PDF</p>
+                <button id="upload-first-diary" class="primary-button">Subir Primer Diario</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para subir diarios -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Subir Nuevo Diario</h2>
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="diary-title">Título del Diario</label>
+                    <input type="text" id="diary-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="diary-category">Categoría</label>
+                    <input type="text" id="diary-category" list="categories" required>
+                    <datalist id="categories">
+                        <!-- Categorías se añadirán dinámicamente -->
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label for="diary-date">Fecha</label>
+                    <input type="date" id="diary-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="diary-file">Archivo PDF</label>
+                    <input type="file" id="diary-file" accept=".pdf" required>
+                </div>
+                <button type="submit" class="primary-button">Guardar Diario</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para estadísticas -->
+    <div id="stats-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Estadísticas de Diarios</h2>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total de Diarios</h3>
+                    <p id="total-diaries">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Categorías</h3>
+                    <p id="total-categories">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Año con más Diarios</h3>
+                    <p id="most-active-year">-</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="diaries-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
